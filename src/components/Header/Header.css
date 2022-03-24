@@ -1,0 +1,32 @@
+header {
+  background-color: #1c2b35;
+  height: 80px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+
+/* header container */
+.header {
+  flex-grow: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header_menu > a {
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s;
+}
+.header_menu > a:hover,
+.header_menu > a.active {
+  color: #ff9900;
+}
+
+.header_menu > a:not(:last-child) {
+  padding-right: 1rem;
+}
