@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import Product from "../Product/Product";
 import "./Products.css";
 
-const Products = ({ handleAddCartBtnClick }) => {
-  const [products, setProducts] = useState([]);
-
+const Products = ({ products, handleAddCartBtnClick }) => {
+  /* const [products, setProducts] = useState([]);
   const loadProducts = async () => {
     let data;
     try {
@@ -18,7 +17,7 @@ const Products = ({ handleAddCartBtnClick }) => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, []); */
 
   return (
     <div className="products">
