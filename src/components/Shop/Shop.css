@@ -1,8 +1,0 @@
-.shop {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  display: grid;
-  grid-template-columns: 4fr 1fr;
-  gap: 1rem;
-}

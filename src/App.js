@@ -1,11 +1,9 @@
-import Header from "./components/Header/Header";
-import Shop from "./components/Shop/Shop";
-
 function App() {
   return (
-    <div className="ema-jhon-store">
-      <Header />
-      <Shop />
+    <div className="App">
+      <header className="App-header">
+        <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      </header>
     </div>
   );
 }
