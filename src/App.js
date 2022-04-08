@@ -1,6 +1,29 @@
+import app from "./firebase.init";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  GithubAuthProvider,
+} from "firebase/auth";
+import { useState } from "react";
+
 function App() {
+  const auth = getAuth(app);
+
+  const [user, setUser] = useState({});
+
   const handleClick = (name) => {
-    console.log(name);
+    if (name === "google") {
+      signInWithPopup(auth, new GoogleAuthProvider())
+        .then((res) => setUser(res.user))
+        .catch((err) => console.error(err.message));
+    } else if (name === "github") {
+      signInWithPopup(auth, new GithubAuthProvider())
+        .then((res) => setUser(res.user))
+        .catch((err) => console.error(err.message));
+    } else {
+      console.log("facebook provider");
+    }
   };
 
   return (
@@ -77,6 +100,21 @@ function App() {
               </svg>
               Github
             </button>
+          </div>
+        </div>
+
+        {/* User */}
+        <div className="flex items-center bg-emerald-200 mt-8">
+          <img
+            className="self-stretch"
+            src={user.photoURL}
+            alt={user.displayName}
+          />
+          <div className="p-4">
+            <h4 className="text-2xl text-600 font-semibold">
+              {user.displayName}
+            </h4>
+            <p className="py-2">{user.email}</p>
           </div>
         </div>
       </div>
