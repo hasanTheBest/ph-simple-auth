@@ -4,6 +4,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   GithubAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { useState } from "react";
 
@@ -11,14 +14,32 @@ const auth = getAuth(app);
 
 function App() {
   const [user, setUser] = useState({});
-  const [emailPass, setEmailPass] = useState({});
+  const [userInfo, setUserInfo] = useState({});
+  const [alreadyUser, setAlreadyUser] = useState(false);
 
   const handleInputBlur = (e) =>
-    setEmailPass({ ...emailPass, [e.target.name]: e.target.value });
+    setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
 
-  const handleClickSignIn = (e) => {
+  const handleFormSubmission = (e) => {
     e.preventDefault();
-    console.log("handle click singin");
+    if (!alreadyUser) {
+      // create user
+      createUserWithEmailAndPassword(auth, userInfo.email, userInfo.password)
+        .then((userCredential) => {
+          setUser(userCredential.user);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    } else {
+      signInWithEmailAndPassword(auth, userInfo.email, userInfo.password)
+        .then((userCredential) => {
+          setUser(userCredential.user);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
   };
 
   const handleClick = (name) => {
@@ -26,13 +47,16 @@ function App() {
       signInWithPopup(auth, new GoogleAuthProvider())
         .then((res) => setUser(res.user))
         .catch((err) => console.error(err.message));
-    } else if (name === "github") {
+    } else {
       signInWithPopup(auth, new GithubAuthProvider())
         .then((res) => setUser(res.user))
         .catch((err) => console.error(err.message));
-    } else {
-      console.log("email and password");
     }
+  };
+
+  const handleClickSignOut = () => {
+    signOut(auth);
+    setUser({});
   };
 
   return (
@@ -47,8 +71,27 @@ function App() {
           {/* Sing in with */}
           <form
             className="bg-emerald-200 p-4 rounded flex-grow-1 w-1/2 items-center"
-            onSubmit={handleClickSignIn}
+            onSubmit={handleFormSubmission}
           >
+            {/* Name */}
+            {!alreadyUser && (
+              <div className="mb-4 flex flex-col">
+                <label
+                  htmlFor="userName"
+                  className="text-emerald-800 font-semibold mb-2"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  className="p-3 text-emerald-900 font-semibold bg-emerald-100 border-0 rounded shadow w-full"
+                  placeholder="Your Name"
+                  name="userName"
+                  onBlur={handleInputBlur}
+                />
+              </div>
+            )}
+
             {/* Email */}
             <div className="mb-4 flex flex-col">
               <label
@@ -66,7 +109,6 @@ function App() {
                 required
               />
             </div>
-
             {/* Password */}
             <div className="mb-4 flex flex-col">
               <label
@@ -85,12 +127,35 @@ function App() {
               />
             </div>
 
+            {/* already a user */}
+            <label
+              htmlFor="alreadyUser"
+              className="text-emerald-700 font-semibold"
+            >
+              <input
+                className="mb-4 mr-2"
+                type="checkbox"
+                name="alreadyUser"
+                id="alreadyUser"
+                onChange={() => setAlreadyUser(!alreadyUser)}
+              />
+              Already A User
+            </label>
+
             {/* submit button */}
-            <input
-              className="p-3 bg-emerald-700 hover:bg-emerald-600 hover:cursor-pointer font-semibold text-emerald-200 hover:text-emerald-50 transition-all rounded shadow w-full"
-              type="submit"
-              value="Sing In"
-            />
+            {alreadyUser ? (
+              <input
+                className="p-3 bg-emerald-700 hover:bg-emerald-600 hover:cursor-pointer font-semibold text-emerald-200 hover:text-emerald-50 transition-all rounded shadow w-full"
+                type="submit"
+                value="Sing In"
+              />
+            ) : (
+              <input
+                className="p-3 bg-emerald-700 hover:bg-emerald-600 hover:cursor-pointer font-semibold text-emerald-200 hover:text-emerald-50 transition-all rounded shadow w-full"
+                type="submit"
+                value="Sing Up"
+              />
+            )}
           </form>
 
           {/* auth trigger button */}
@@ -168,19 +233,27 @@ function App() {
         </div>
 
         {/* User */}
-        <div className="flex items-center bg-emerald-200 mt-8">
-          <img
-            className="self-stretch"
-            src={user.photoURL}
-            alt={user.displayName}
-          />
-          <div className="p-4">
-            <h4 className="text-2xl text-600 font-semibold">
-              {user.displayName}
-            </h4>
-            <p className="py-2">{user.email}</p>
+        {user.uid && (
+          <div className="flex items-center bg-emerald-200 mt-8">
+            <img
+              className="self-stretch"
+              src={user.photoURL}
+              alt={user.displayName}
+            />
+            <div className="p-4">
+              <h4 className="text-2xl text-600 font-semibold">
+                {user.displayName}
+              </h4>
+              <p className="py-2 mb-3">{user.email}</p>
+              <button
+                className="py-2 px-4 bg-emerald-700 hover:bg-emerald-600 text-emerald-200 hover:text-emerald-100 rounded shadow transition-all"
+                onClick={handleClickSignOut}
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
